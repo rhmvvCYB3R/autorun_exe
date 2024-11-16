@@ -14,10 +14,11 @@ directories = ""
 
 def path_btn():
     global directories
-    messagebox.showinfo("INFO","ВЫБЕРИТЕ .EXE ФАЙЛЫ ЧТОБЫ ДОБАВИТЬ В АВТОЗАГРУЗКУ!\n НАЖМИТЕ НА ОК ЧТОБЫ ПРОДОЛЖИТЬ....")
+    messagebox.showinfo("INFO", "ВЫБЕРИТЕ .EXE ФАЙЛЫ ЧТОБЫ ДОБАВИТЬ В АВТОЗАГРУЗКУ!\nНАЖМИТЕ НА ОК ЧТОБЫ ПРОДОЛЖИТЬ....")
     path = filedialog.askopenfilename(
-        initialdir="C:/", title="SELECT FILE", filetypes=(("Executable files", "*.exe"), ("All files", "*.*")))
-    
+        initialdir="C:/", title="SELECT FILE", filetypes=(("Executable files", "*.exe"), ("All files", "*.*"))
+    )
+
     if path:
         directories = path
         file_path.delete(0, tkinter.END)
@@ -26,11 +27,11 @@ def path_btn():
 def patch_btn():
     global directories
     autorun = autorun_var.get()
-    
+
     if not directories:
         messagebox.showerror(title="Ошибка", message="Выберите EXE файл для автозапуска!")
         return
-    
+
     if autorun == 1:
         try:
             add_to_autorun(directories)
@@ -47,10 +48,11 @@ def patch_btn():
 def add_to_autorun(file_path):
     key = reg.HKEY_CURRENT_USER
     reg_path = r"Software\Microsoft\Windows\CurrentVersion\Run"
-    
+
     try:
         reg_key = reg.OpenKey(key, reg_path, 0, reg.KEY_WRITE)
-        reg.SetValueEx(reg_key, os.path.basename(file_path), 0, reg.REG_SZ, file_path)
+        quoted_path = f'"{file_path}"'
+        reg.SetValueEx(reg_key, os.path.basename(file_path), 0, reg.REG_SZ, quoted_path)
         reg.CloseKey(reg_key)
     except Exception as e:
         raise Exception("Не удалось добавить в автозапуск: " + str(e))
@@ -58,15 +60,20 @@ def add_to_autorun(file_path):
 def remove_from_autorun(file_path):
     key = reg.HKEY_CURRENT_USER
     reg_path = r"Software\Microsoft\Windows\CurrentVersion\Run"
-    
+
     try:
         reg_key = reg.OpenKey(key, reg_path, 0, reg.KEY_WRITE)
         reg.DeleteValue(reg_key, os.path.basename(file_path))
         reg.CloseKey(reg_key)
+    except FileNotFoundError:
+        raise Exception("Файл не найден в автозагрузке!")
     except Exception as e:
         raise Exception("Не удалось удалить из автозапуска: " + str(e))
 
-text_info = customtkinter.CTkLabel(window, text="\nПрограмма для добавления файлов в автозапуск \nи также для удаления", font=("Compact", 16), text_color="red", bg_color="grey")
+text_info = customtkinter.CTkLabel(
+    window, text="\nПрограмма для добавления файлов в автозапуск \nи также для удаления",
+    font=("Compact", 16), text_color="red", bg_color="grey"
+)
 text_info.place(x=20, y=0)
 
 text_auth = customtkinter.CTkLabel(window, text="rhmvvCYB3R", font=("Compact", 12), text_color="blue", bg_color="grey")
@@ -74,10 +81,14 @@ text_auth.place(x=640, y=520)
 
 autorun_var = tkinter.IntVar()
 
-autorun = customtkinter.CTkRadioButton(window, text="Добавить в АВТОЗАПУСК", fg_color="GREEN", bg_color="GREY", value=1, variable=autorun_var)
+autorun = customtkinter.CTkRadioButton(
+    window, text="Добавить в АВТОЗАПУСК", fg_color="GREEN", bg_color="GREY", value=1, variable=autorun_var
+)
 autorun.place(x=20, y=170)
 
-dell_autorun = customtkinter.CTkRadioButton(window, text="Убрать с АВТОЗАПУСКА", fg_color="RED", bg_color="GREY", value=2, variable=autorun_var)
+dell_autorun = customtkinter.CTkRadioButton(
+    window, text="Убрать с АВТОЗАПУСКА", fg_color="RED", bg_color="GREY", value=2, variable=autorun_var
+)
 dell_autorun.place(x=20, y=200)
 
 file_path = customtkinter.CTkEntry(window, width=400, height=35, font=("Compact", 13), text_color="blue", bg_color="grey")
