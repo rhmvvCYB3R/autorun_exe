@@ -1,5 +1,5 @@
 import tkinter
-from tkinter import Tk, ttk, messagebox, filedialog
+from tkinter import Tk, messagebox, filedialog
 import customtkinter
 import os
 import winreg as reg
@@ -18,7 +18,6 @@ def path_btn():
     path = filedialog.askopenfilename(
         initialdir="C:/", title="SELECT FILE", filetypes=(("Executable files", "*.exe"), ("All files", "*.*"))
     )
-
     if path:
         directories = path
         file_path.delete(0, tkinter.END)
@@ -27,11 +26,9 @@ def path_btn():
 def patch_btn():
     global directories
     autorun = autorun_var.get()
-
     if not directories:
         messagebox.showerror(title="Ошибка", message="Выберите EXE файл для автозапуска!")
         return
-
     if autorun == 1:
         try:
             add_to_autorun(directories)
@@ -47,8 +44,7 @@ def patch_btn():
 
 def add_to_autorun(file_path):
     key = reg.HKEY_CURRENT_USER
-    reg_path = r"Software\Microsoft\Windows\CurrentVersion\Run"
-
+    reg_path = r"Software\\Microsoft\\Windows\\CurrentVersion\\Run"
     try:
         reg_key = reg.OpenKey(key, reg_path, 0, reg.KEY_WRITE)
         quoted_path = f'"{file_path}"'
@@ -59,8 +55,7 @@ def add_to_autorun(file_path):
 
 def remove_from_autorun(file_path):
     key = reg.HKEY_CURRENT_USER
-    reg_path = r"Software\Microsoft\Windows\CurrentVersion\Run"
-
+    reg_path = r"Software\\Microsoft\\Windows\\CurrentVersion\\Run"
     try:
         reg_key = reg.OpenKey(key, reg_path, 0, reg.KEY_WRITE)
         reg.DeleteValue(reg_key, os.path.basename(file_path))
