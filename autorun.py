@@ -19,9 +19,10 @@ def path_btn():
         initialdir="C:/", title="SELECT FILE", filetypes=(("Executable files", "*.exe"), ("All files", "*.*"))
     )
     if path:
-        directories = path
+        directories = os.path.normpath(path)  # Преобразуем путь из C:/ в C:\
         file_path.delete(0, tkinter.END)
         file_path.insert(0, directories)
+
 
 def patch_btn():
     global directories
@@ -44,18 +45,20 @@ def patch_btn():
 
 def add_to_autorun(file_path):
     key = reg.HKEY_CURRENT_USER
-    reg_path = r"Software\\Microsoft\\Windows\\CurrentVersion\\Run"
+    reg_path = r"Software\Microsoft\Windows\CurrentVersion\Run"
     try:
         reg_key = reg.OpenKey(key, reg_path, 0, reg.KEY_WRITE)
-        quoted_path = f'"{file_path}"'
-        reg.SetValueEx(reg_key, os.path.basename(file_path), 0, reg.REG_SZ, quoted_path)
+        program_name = os.path.splitext(os.path.basename(file_path))[0]
+        normalized_path = os.path.normpath(file_path)  # Преобразуем путь из C:/ в C:\
+        quoted_path = f'"{normalized_path}"'  # Заключаем путь в кавычки
+        reg.SetValueEx(reg_key, program_name, 0, reg.REG_SZ, quoted_path)
         reg.CloseKey(reg_key)
     except Exception as e:
         raise Exception("Не удалось добавить в автозапуск: " + str(e))
 
 def remove_from_autorun(file_path):
     key = reg.HKEY_CURRENT_USER
-    reg_path = r"Software\\Microsoft\\Windows\\CurrentVersion\\Run"
+    reg_path = r"Software\Microsoft\Windows\CurrentVersion\Run"
     try:
         reg_key = reg.OpenKey(key, reg_path, 0, reg.KEY_WRITE)
         reg.DeleteValue(reg_key, os.path.basename(file_path))
