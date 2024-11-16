@@ -19,7 +19,7 @@ def path_btn():
         initialdir="C:/", title="SELECT FILE", filetypes=(("Executable files", "*.exe"), ("All files", "*.*"))
     )
     if path:
-        directories = os.path.normpath(path)  # Преобразуем путь из C:/ в C:\
+        directories = os.path.normpath(path)  # Преобразуем путь из C:/ в C:\ .
         file_path.delete(0, tkinter.END)
         file_path.insert(0, directories)
 
