@@ -1,3 +1,4 @@
+#ПРОГРАММА ДЛЯ ДОБАВЛЕНИЯ .EXE В АВТОЗАПУСК
 import tkinter
 from tkinter import Tk, messagebox, filedialog
 import customtkinter
@@ -62,7 +63,7 @@ def remove_from_autorun(file_path):
     try:
         reg_key = reg.OpenKey(key, reg_path, 0, reg.KEY_WRITE)
         program_name = os.path.splitext(os.path.basename(file_path))[0]  # Получаем имя файла без пути
-        reg.DeleteValue(reg_key, program_name)  # Удаляем по имени записи
+        reg.DeleteValue(reg_key, program_name)  # Удаляем по имени записи.
         reg.CloseKey(reg_key)
     except FileNotFoundError:
         raise Exception("Запись не найдена в автозагрузке!")
