@@ -61,12 +61,14 @@ def remove_from_autorun(file_path):
     reg_path = r"Software\Microsoft\Windows\CurrentVersion\Run"
     try:
         reg_key = reg.OpenKey(key, reg_path, 0, reg.KEY_WRITE)
-        reg.DeleteValue(reg_key, os.path.basename(file_path))
+        program_name = os.path.splitext(os.path.basename(file_path))[0]  # Получаем имя файла без пути
+        reg.DeleteValue(reg_key, program_name)  # Удаляем по имени записи
         reg.CloseKey(reg_key)
     except FileNotFoundError:
-        raise Exception("Файл не найден в автозагрузке!")
+        raise Exception("Запись не найдена в автозагрузке!")
     except Exception as e:
         raise Exception("Не удалось удалить из автозапуска: " + str(e))
+
 
 text_info = customtkinter.CTkLabel(
     window, text="\nПрограмма для добавления файлов в автозапуск \nи также для удаления",
