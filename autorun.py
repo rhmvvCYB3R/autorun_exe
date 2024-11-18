@@ -13,6 +13,10 @@ window.config(background="#d6dbdf")
 directories = ""
 
 
+name_file = ""
+delay_time = ""
+path = ""
+
 
 def delayed_frame():
     app = customtkinter.CTk()
@@ -21,9 +25,73 @@ def delayed_frame():
     app.resizable(False,False)
     app.config(background="#d6dbdf")
 
+    text_info2 = customtkinter.CTkLabel(app,text="""
+  
+     ──▒▒▒▒▒────▒▒▒▒▒────▒▒▒▒▒────▄████▄
+   ─▒▄─▒▄─▒──▒▄─▒▄─▒──▒▄─▒▄─▒──███▄█▀
+─▒▒▒▒▒▒▒──▒▒▒▒▒▒▒──▒▒▒▒▒▒▒─▐████
+  ─▒▒▒▒▒▒▒──▒▒▒▒▒▒▒──▒▒▒▒▒▒▒──█████▄
+    ─▒─▒─▒─▒──▒─▒─▒─▒──▒─▒─▒─▒───▀████▀
+    """,text_color="purple",bg_color="#d6dbdf")
+    text_info2.place(x=100,y=430)
+
+    
+    def funk_find():
+        global path
+        messagebox.showinfo("INFO", "ВЫБЕРИТЕ .EXE ФАЙЛ ДЛЯ КОТОРОГО ХОТИТЕ СОЗДАТЬ .БАТ\nНАЖМИТЕ НА ОК ЧТОБЫ ПРОДОЛЖИТЬ....")
+        path = filedialog.askopenfilename(
+            initialdir="C:/", title="SELECT FILE", filetypes=(("Executable files", "*.exe"), ("All files", "*.*"))
+        )
+        if path:
+            path = os.path.normpath(path)
+            file_dir.delete(0, tkinter.END)
+            file_dir.insert(0, path)
+
+    def funk_creater():
+        if path and delay_time:
+            path_without_exe = os.path.dirname(path)
+            name_file = os.path.basename(path)
+
+            bat_data = f"""
+@echo off
+cd /d "{path_without_exe}"
+timeout /t {delay_time}
+start "" "{name_file}" 2>> error_log.txt
+            """
+            save_path = filedialog.asksaveasfilename(defaultextension=".bat", filetypes=[("Batch Files", "*.bat")])
+            if save_path:
+                with open(save_path, "w") as bat_file:
+                    bat_file.write(bat_data)
+                messagebox.showinfo("INFO", "Файл .BAT успешно создан!")
+            else:
+                messagebox.showerror("ERROR", "Не удалось сохранить .BAT файл.")
+        else:
+            messagebox.showerror("ERROR", "Не выбрано .EXE приложение или задержка.")
+
+    text_info3 = customtkinter.CTkLabel(app, text="СОЗДАНИЕ .БАТ ФАЙЛА С ЗАДЕРЖКОЙ ЗАПУСКА!", text_color="red", bg_color="#d6dbdf", font=("COMPACT", 20))
+    text_info3.place(x=95, y=10)
+
+    file_dir = customtkinter.CTkEntry(app, width=400, height=35, font=("Compact", 13), text_color="blue", bg_color="#d6dbdf")
+    file_dir.insert(0, path)
+    file_dir.place(x=40, y=100)
+
+    file_find_btn = customtkinter.CTkButton(app, text="ОБЗОР", fg_color="BLACK", command=funk_find, bg_color="#d6dbdf", width=80, height=30)
+    file_find_btn.place(x=450, y=103)
+
+    bat_creater_btn = customtkinter.CTkButton(app, text="СОЗДАТЬ ФАЙЛ!", command=funk_creater, bg_color="#d6dbdf", text_color="BLACK")
+    bat_creater_btn.place(x=500, y=400)
+
+    def combobox_callback(choice):
+        global delay_time
+        delay_time = choice
+
+    combobox_var = customtkinter.StringVar(value="ВЫБЕРИТЕ ЗАДЕРЖУ(секунды)")  
+    combobox = customtkinter.CTkComboBox(app, values=["ВЫБЕРИТЕ ЗАДЕРЖУ(секунды)","2", "3", "5", "8", "10"],
+                                         command=combobox_callback, variable=combobox_var, width=250, fg_color="red", bg_color="#d6dbdf")
+    combobox.set("ВЫБЕРИТЕ ЗАДЕРЖУ(секунды)")
+    combobox.place(x=40, y=140)
 
     app.mainloop()
-    
 
 
 def path_btn():
